@@ -11,19 +11,34 @@ performance with `yarn profile:inmem` and `yarn profile:stream`.
 
 ## Results
 
-Example results from testing:
+From testing the two methods for processing data, the stream is significantly
+more performant than the in-memory process:
+
+```
+┌──────────────────┬─────────────────┬───────────────┬───────────────────┐
+| Metric           | In-Memory       | Streaming     | Perf Increase (%) |
+| ---------------- | --------------- | ------------- | ----------------- |
+| Execution Time   |   697 ms        |   343 ms      |   +50.79%         |
+| CPU Time         |   2350 ms       |   660 ms      |   +71.91%         |
+| Memory Allocated |   860.84 MB     |   301.72 MB   |   +64.96%         |
+| Heap Total       |   670.25 MB     |   186.2 MB    |   +72.23%         |
+| Memory Used      |   631.73 MB     |   153.47 MB   |   +75.70%         |
+└──────────────────┴─────────────────┴───────────────┴───────────────────┘
+```
+
+The output from the individual runs is as follows:
 
 ### In Memory
 
 ```
 ┌──────────────────┬─────────────┐
-│ (index)          │ Values      │
+│ Metric           │ Values      │
 ├──────────────────┼─────────────┤
-│ Execution Time   │ '400 ms'    │
-│ CPU Time         │ '1180 ms'   │
-│ Memory Allocated │ '616.89 MB' │
-│ Heap Total       │ '519.41 MB' │
-│ Memory Used      │ '486.31 MB' │
+│ Execution Time   │ '697 ms'    │
+│ CPU Time         │ '2350 ms'   │
+│ Memory Allocated │ '860.84 MB' │
+│ Heap Total       │ '670.25 MB' │
+│ Memory Used      │ '631.73 MB' │
 └──────────────────┴─────────────┘
 ```
 
@@ -31,12 +46,12 @@ Example results from testing:
 
 ```
 ┌──────────────────┬─────────────┐
-│ (index)          │ Values      │
+│ Metric           │ Values      │
 ├──────────────────┼─────────────┤
-│ Execution Time   │ '33 ms'     │
-│ CPU Time         │ '110 ms'    │
-│ Memory Allocated │ '287.41 MB' │
-│ Heap Total       │ '131.03 MB' │
-│ Memory Used      │ '92.83 MB'  │
+│ Execution Time   │ '343 ms'    │
+│ CPU Time         │ '660 ms'    │
+│ Memory Allocated │ '301.72 MB' │
+│ Heap Total       │ '186.2 MB'  │
+│ Memory Used      │ '153.47 MB' │
 └──────────────────┴─────────────┘
 ```
