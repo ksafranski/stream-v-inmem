@@ -1,7 +1,18 @@
 import { createReadStream, createWriteStream } from "fs";
 import { Transform, TransformOptions } from "stream";
 import { startProfiling, outputReport } from "./profiler";
+
+// NOTE: In reality this file should be split into libs
+
+/**
+ * ----------------------------------------------
+ * JSONStreamParser (abstract to another file)
+ * Streams JSON, parses, and converts to objects
+ * ----------------------------------------------
+ */
+
 class JSONStreamParser extends Transform {
+  // Store any incomplete JSON object from the last chunk
   private remainder: string = "";
 
   constructor(options?: TransformOptions) {
@@ -30,8 +41,8 @@ class JSONStreamParser extends Transform {
         }
         endIndex++; // Include the closing brace
 
-        const jsonStr = data.substring(startIndex, endIndex);
-        const jsonObj = JSON.parse(jsonStr);
+        // Parse the JSON object
+        const jsonObj = JSON.parse(data.substring(startIndex, endIndex));
         this.push(jsonObj); // Emit the parsed object
 
         lastIndex = endIndex;
@@ -41,7 +52,7 @@ class JSONStreamParser extends Transform {
       // Save any incomplete data to be processed with the next chunk
       this.remainder = data.substring(lastIndex);
       callback();
-    } catch (error) {
+    } catch (error: Error | any) {
       callback(error);
     }
   }
@@ -50,11 +61,10 @@ class JSONStreamParser extends Transform {
     if (this.remainder) {
       // Attempt to process any remaining data at the end of the stream
       try {
-        const jsonObj = this.remainder;
-        this.push(jsonObj); // Emit the final object
+        this.push(this.remainder); // Emit the final object
         this.remainder = "";
         callback();
-      } catch (error) {
+      } catch (error: Error | any) {
         callback(error);
       }
     } else {
@@ -63,6 +73,13 @@ class JSONStreamParser extends Transform {
   }
 }
 
+/**
+ * ----------------------------------------------
+ * ObjectToCSVTransformer (abstract to another file)
+ * Converts objects to CSV format and pushes to
+ * the output stream.
+ * ----------------------------------------------
+ */
 class ObjectToCSVTransformer extends Transform {
   private isFirstLine: boolean = true;
   public ignoreHeader: boolean = false;
@@ -95,7 +112,7 @@ class ObjectToCSVTransformer extends Transform {
     try {
       this.push(Object.values(obj).join(",") + "\n"); // Emit the CSV line
       callback();
-    } catch (error) {
+    } catch (error: Error | any) {
       callback(error);
     }
   }
@@ -105,10 +122,21 @@ class ObjectToCSVTransformer extends Transform {
   }
 }
 
-const BUFFER_SIZE = 1024 * 1024;
-
-const main = async () => {
+/**
+ * ----------------------------------------------
+ * Main is called and creates the read streams,
+ * pipes through the JSONStreamParser and
+ * ObjectToCSVTransformer, and writes the output
+ * to a CSV file.
+ * ----------------------------------------------
+ */
+const main = async (): Promise<void> => {
+  // Set the buffer size to 1MB
+  const BUFFER_SIZE = 1024 * 1024;
+  // Start profiling the memory usage
   startProfiling();
+
+  // Create the read stream, JSON parser, CSV transformer, and write stream
   const readStream = createReadStream("data.json", {
     highWaterMark: BUFFER_SIZE,
   });
@@ -122,10 +150,14 @@ const main = async () => {
   const writeStream = createWriteStream("output.csv", {
     highWaterMark: BUFFER_SIZE,
   });
+
+  // Pipe the streams together and write the output to a CSV file
   readStream
     .pipe(jsonStreamParser)
     .pipe(objectToCSVTransformer)
     .pipe(writeStream);
+
+  // Output the report after the write stream finishes
   writeStream.on("finish", () => {
     outputReport();
   });

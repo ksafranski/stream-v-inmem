@@ -8,7 +8,6 @@
     "profile:inmem": "ts-node in_mem.ts"
   },
   "dependencies": {
-    "@iwsio/json-csv-node": "^6.1.3",
     "@types/node": "^20.12.8",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
