@@ -25,33 +25,3 @@ more performant than the in-memory process:
 | Memory Used      |   631.73 MB     |   153.47 MB   |   +75.70%         |
 └──────────────────┴─────────────────┴───────────────┴───────────────────┘
 ```
-
-The output from the individual runs is as follows:
-
-### In Memory
-
-```
-┌──────────────────┬─────────────┐
-│ Metric           │ Values      │
-├──────────────────┼─────────────┤
-│ Execution Time   │ '697 ms'    │
-│ CPU Time         │ '2350 ms'   │
-│ Memory Allocated │ '860.84 MB' │
-│ Heap Total       │ '670.25 MB' │
-│ Memory Used      │ '631.73 MB' │
-└──────────────────┴─────────────┘
-```
-
-### Stream
-
-```
-┌──────────────────┬─────────────┐
-│ Metric           │ Values      │
-├──────────────────┼─────────────┤
-│ Execution Time   │ '343 ms'    │
-│ CPU Time         │ '660 ms'    │
-│ Memory Allocated │ '301.72 MB' │
-│ Heap Total       │ '186.2 MB'  │
-│ Memory Used      │ '153.47 MB' │
-└──────────────────┴─────────────┘
-```
